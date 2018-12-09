@@ -1,0 +1,57 @@
+#!/bin/bash
+
+coutSetting="N"
+fileType="NoType";
+IsfileRemove="Y";
+IsDebug="N";
+fileName="NoFile";
+OutFileIndex=-1;
+
+CheckFileType(){
+    echo "CheackFile";
+    echo $fileName;
+}
+
+FireFile(){
+    echo $coutSetting;
+}
+
+CheckArgs(){
+    #whether the count of parameters is valid;
+    if [ $# == 0 ]
+    then
+        echo "Error : number of invalid parameters!"
+        exit 1;
+    fi
+
+    ArgIndex=0;
+    for arg in $*
+    do
+        if [ -f $arg ] && [ "${arg##*.}"x = "*"x ]
+        then
+            fileName=$arg;
+        elif [ $arg = "-o" ]
+        then
+            coutSetting="Y";
+            OutFileIndex=$ArgIndex+1;
+        elif [ $OutFileIndex >= 1 ] && [ -f $arg ]
+        then
+            echo "WARNING : excutable already exists or not regenerated?[Y/N]"
+            read IsfileRemove;
+        elif [ $arg = "-D" ]
+        then
+            IsDebug="Y";
+        fi
+        let "ArgIndex++";
+    done
+
+    if [ $fileName = "NoFile" ]
+    then
+        echo "Error : the file does not exist in the current folder!";
+        exit 1;
+    fi
+}
+
+CheckArgs $*;
+CheckFileType;
+FireFile;
